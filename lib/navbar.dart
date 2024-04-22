@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spotify_clone/Player/custom_player.dart';
 import 'package:spotify_clone/models/song_model.dart';
+import 'package:spotify_clone/repo/navbar_provider.dart';
 import 'package:spotify_clone/repo/user_auth.dart';
 import 'package:spotify_clone/repo/user_info.dart';
 import 'package:spotify_clone/ui/favourite_screen.dart';
@@ -19,7 +20,6 @@ class NavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<NavBar> {
-  int _index = 0;
   List navPages = [
     const HomePage(),
     const SearchScreen(),
@@ -28,138 +28,139 @@ class _NavBarState extends State<NavBar> {
   ];
   final UserInformationProvider _userInformation = UserInformationProvider();
   final AuthService _authService = AuthService();
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     String? userId = _authService.getCurrentUserId();
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      body: Stack(
-        children: [
-          navPages.elementAt(_index),
-          Positioned(
-            bottom: 2,
-            left: 0,
-            right: 0,
-            child: StreamBuilder<SongModel?>(
-              stream: _userInformation.getLastPlayedSong(userId!),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (snapshot.hasData && snapshot.data != null) {
-                  SongModel? songModel = snapshot.data;
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PlayerScreen(
-                            songModel: songModel,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.brown.shade800,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      height: size.height * 0.07,
-                      padding: const EdgeInsets.all(5),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Image.network(
-                              songModel!.coverImage,
-                              fit: BoxFit.cover,
+    return Consumer<NavBarProvider>(
+      builder:(context,navBarProvider,child)=> Scaffold(
+        body: Stack(
+          children: [
+            navPages.elementAt(navBarProvider.navBarIndex),
+            Positioned(
+              bottom: 2,
+              left: 0,
+              right: 0,
+              child:StreamBuilder<SongModel?>(
+                stream: _userInformation.getLastPlayedSong(userId!),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox(); // Return a placeholder widget while loading
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    final songModel = snapshot.data;
+                    return GestureDetector(
+                      onTap: () {
+                        if (songModel != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlayerScreen(
+                                songModel: songModel,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                songModel.name ?? '',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.brown.shade800,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        height: size.height * 0.07,
+                        padding: const EdgeInsets.all(5),
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: Image.network(
+                                songModel?.coverImage ?? '',
+                                fit: BoxFit.cover,
                               ),
-                              Text(
-                                songModel.artist ?? '',
-                                style: const TextStyle(
-                                  color: Colors.white70,
+                            ),
+                            const SizedBox(width: 8),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  songModel?.name ?? '',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const Expanded(
-                            child: SizedBox(),
-                          ),
-                          Consumer<CustomPlayerProvider>(
-                            builder: (context, customPlayerProvider, child) =>
-                                IconButton(
-                              onPressed: () {
-                                customPlayerProvider.playerBottomBar(songModel);
-                              },
-                              icon: customPlayerProvider.isPlaying
-                                  ? Icon(
+                                Text(
+                                  songModel?.artist ?? '',
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Expanded(
+                              child: SizedBox(),
+                            ),
+                            Consumer<CustomPlayerProvider>(
+                              builder: (context, customPlayerProvider, child) =>
+                                  IconButton(
+                                    onPressed: () {
+                                      if (songModel != null) {
+                                        customPlayerProvider.playerBottomBar(songModel);
+                                      }
+                                    },
+                                    icon: customPlayerProvider.isPlaying
+                                        ? Icon(
                                       Icons.pause,
                                       color: Colors.white,
                                       size: size.height * 0.043,
                                     )
-                                  : Icon(
+                                        : Icon(
                                       Icons.play_arrow,
                                       color: Colors.white,
                                       size: size.height * 0.043,
                                     ),
+                                  ),
                             ),
-                          )
-                          // Add buttons for play, pause, etc. if desired
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }
-                return Container();
-              },
+                    );
+                  }
+                },
+              ),
+
+            )
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: navBarProvider.navBarIndex,
+          onTap: (index) {
+            setState(() {
+              navBarProvider.setIndex(index);
+            });
+          },
+          items: const [
+            BottomNavigationBarItem(
+              label: "home",
+              icon: Icon(Icons.home),
             ),
-          )
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _index,
-        onTap: (index) {
-          setState(() {
-            _index = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            label: "home",
-            icon: Icon(Icons.home),
-          ),
-          BottomNavigationBarItem(
-            label: "search",
-            icon: Icon(Icons.search_rounded),
-          ),
-          BottomNavigationBarItem(
-            label: "favourite",
-            icon: Icon(Icons.favorite_outline),
-          ),
-          BottomNavigationBarItem(
-            label: "profile",
-            icon: Icon(Icons.account_circle),
-          )
-        ],
+            BottomNavigationBarItem(
+              label: "search",
+              icon: Icon(Icons.search_rounded),
+            ),
+            BottomNavigationBarItem(
+              label: "favourite",
+              icon: Icon(Icons.favorite_outline),
+            ),
+            BottomNavigationBarItem(
+              label: "profile",
+              icon: Icon(Icons.account_circle),
+            )
+          ],
+        ),
       ),
     );
   }

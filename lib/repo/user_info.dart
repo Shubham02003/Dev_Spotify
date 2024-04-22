@@ -55,7 +55,6 @@ class UserInformationProvider extends ChangeNotifier {
           }
         }
       }
-      // If there's no last played song data or the user document doesn't exist, return null
       return null;
     });
   }

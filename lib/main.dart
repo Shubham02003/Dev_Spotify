@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spotify_clone/Player/custom_player.dart';
 import 'package:spotify_clone/navbar.dart';
+import 'package:spotify_clone/repo/navbar_provider.dart';
 import 'package:spotify_clone/repo/user_info.dart';
 import 'package:spotify_clone/ui/home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_)=>CustomPlayerProvider()),
         ChangeNotifierProvider(create: (_)=>UserInformationProvider()),
+        ChangeNotifierProvider(create: (_)=>NavBarProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

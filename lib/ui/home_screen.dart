@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:spotify_clone/Player/custom_player.dart';
 import 'package:spotify_clone/models/song_model.dart';
 import 'package:spotify_clone/repo/all_song_repo.dart';
-import 'package:spotify_clone/repo/user_auth.dart';
-import 'package:spotify_clone/repo/user_info.dart';
 import 'package:spotify_clone/utils/home_songs_horizontal_list.dart';
 
 class HomePage extends StatefulWidget {
@@ -107,38 +103,7 @@ class HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Artist',
-                style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-            ),
-            // Horizontal list of songs sorted by artist name
-            SizedBox(
-              height: 150,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: songsByArtist.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    margin: const EdgeInsets.all(8.0),
-                    color: Colors.grey[850],
-                    child: Container(
-                      width: 120,
-                      alignment: Alignment.center,
-                      child: Text(
-                        songsByArtist[index],
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+            // Horizontal list of songs sorted by artist nam
           ],
         ),
       ),
@@ -146,16 +111,4 @@ class HomePageState extends State<HomePage> {
   }
 }
 
-List<String> mostPlayedSongsThisWeek = [
-  'Song E',
-  'Song F',
-  'Song G',
-  'Song H',
-];
 
-List<String> songsByArtist = [
-  'Song I',
-  'Song J',
-  'Song K',
-  'Song L',
-];

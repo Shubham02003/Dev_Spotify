@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
@@ -70,7 +71,9 @@ class AuthService {
         },
       );
     } catch (e) {
-      print('Error signing in with phone number: $e');
+      if (kDebugMode) {
+        print('Error signing in with phone number: $e');
+      }
       errorCallback(e as FirebaseAuthException);
     }
   }
@@ -80,10 +83,18 @@ class AuthService {
     return currentUser?.uid;
   }
 
+  User? getCurrentUser(){
+    return _auth.currentUser;
+  }
+
   /// Sign out the user
   Future<void> signOut() async {
-    await _auth.signOut();
-    await _googleSignIn.signOut();
-    await _facebookAuth.logOut();
+    try{
+      await _googleSignIn.signOut();
+    }catch(e){
+      if (kDebugMode) {
+        print(e);
+      }
+    }
   }
 }
