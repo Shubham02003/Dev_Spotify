@@ -30,7 +30,7 @@ Here are some screenshots showcasing the UI of Fspotify:
   <img src="https://github.com/user-attachments/assets/de5b5ce9-9411-403c-8d51-e3429bbe9d3c" alt="Search Screen" width="300" height="600"/>
 </p>
 
-*Description: The player screen shows the currently playing song with a prominent album cover. It includes playback controls (play/pause, skip, shuffle, repeat), a progress bar, and options to like the song or add it to a playlist.*
+*Description: The player screen shows the currently playing song with a prominent album cover. It includes playback controls (play/pause, skip), a progress bar, and options to like the song or add it to a playlist.*
 
 *The search interface allows users to find songs, artists, and playlists. It features a search bar at the top and displays results in a scrollable list, making it easy to discover new music or find favorite tracks.*
 
